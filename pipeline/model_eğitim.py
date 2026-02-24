@@ -1,4 +1,5 @@
 from src import Dosya_Islemleri
+from src.null_islemleri import NullIslemiFactory
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
@@ -19,6 +20,23 @@ df =Dosya_Islemleri.DataFrame_Dondur(csv_dosya_yolu)
 
 
 df = df[df["price"]>0]
+
+#--------------------------
+null_plani = {
+    "sqft_living": "ortalama",       # "median" değil, "ortalama"
+    "yr_built":    "ortalama",
+    "bedrooms":    "ortalama",
+    "bathrooms":   "ortalama",
+    "floors":      "ortalama",
+    "view":        "satir_silme",    # "satir_sil" değil, "satir_silme"
+    "waterfront":  "satir_silme",
+    "city":        "satir_silme",
+}
+for sutun, strateji in null_plani.items():
+    if sutun in df.columns:
+        df = NullIslemiFactory.olustur(strateji).uygula(df, sutun)
+#--------------------------
+
 le = LabelEncoder()
 df["city_encoded"]=le.fit_transform(df["city"])
 feature = ["sqft_living","yr_built","bedrooms","bathrooms","floors","view","waterfront","city_encoded"]
